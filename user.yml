@@ -1,0 +1,27 @@
+---
+- name: basic user setup
+  hosts: all
+  tasks:
+  - name: check python installation, if not install install it.
+    yum:
+      name: python3
+      state: present
+  - name: Make sure we have a 'ansible' group
+    group:
+      name: ansible
+      state: present
+  - name: Allow 'ansible' group to have passwordless sudo
+    lineinfile:
+      dest: /etc/sudoers
+      state: present
+      regexp: '^%ansible'
+      line: '%ansible ALL=(ALL) NOPASSWD: ALL'
+      validate: 'visudo -cf %s'
+  - name: Add sudoers user to admin group
+    user:
+      name=admin
+      groups=ansible
+      append=yes
+      state=present
+      createhome=yes
+...
